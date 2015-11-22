@@ -2,7 +2,11 @@
   (:use [selmer.parser])
   (:require [compojure.route :as route]
             [compojure.core :refer :all]
+            [ring.util.anti-forgery :refer [anti-forgery-field]]
+            [ring.middleware.defaults :refer :all]
             [compojure.handler :as handler]))
+
+(add-tag! :csrf-field (fn [_ _] (anti-forgery-field)))
 
 (defroutes app-routes
   (route/resources "/")
@@ -12,11 +16,26 @@
   []
   (render-file "vanilla/views/home.html" {}))
 
-(defroutes home-routes
-  (GET "/" [] (home))) 
+(defn sessions-new
+  []
+  (render-file "vanilla/views/sessions/new.html" {}))
 
+(defn sessions-create
+  [request]
+  (str request))
+
+(defroutes home-routes
+  (GET "/" [] (home))
+  (GET "/sessions/new" [] (sessions-new))
+  (POST "/sessions" request (sessions-create request)))
+
+; Эта перeменная хранит handler - ф-я сформированная из цепочки ф-ий высшего порядка
+; handler один на все приложение, это концепция ring
+; аргумент для handler'а - request - простой map
 (def app
-  (handler/site (routes home-routes app-routes)))
+  (-> 
+    (routes home-routes app-routes)
+    (wrap-defaults site-defaults)))
 
 (defn init
   []

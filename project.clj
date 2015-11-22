@@ -8,6 +8,7 @@
                  [org.postgresql/postgresql "9.3-1104-jdbc41"]
                  [ring/ring-core "1.4.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
+                 [ring/ring-defaults "0.1.5"]
                  [compojure "1.4.0"]
                  [selmer "0.9.3"]]
                  
